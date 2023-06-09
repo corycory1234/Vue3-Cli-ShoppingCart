@@ -41,8 +41,8 @@ export default {
     },
 
     goNext (currentPage) {
-      currentPage += currentPage
-      // console.log(currentPage)
+      currentPage += 1
+      console.log(currentPage)
       this.$emit('go-next', currentPage)
     },
 
