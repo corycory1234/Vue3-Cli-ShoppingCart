@@ -1,4 +1,5 @@
 <template>
+
   <Loading-Overlay :active="isLoading"></Loading-Overlay>
   <div class="text-end">
     <!-- 「$refs」是父組件用來呼叫子組件的語法 -->
@@ -59,17 +60,27 @@
   @update-product="updateProduct">
   </ProductModal>
 
-  <!-- 刪除商品之標籤 -->
+  <!-- 刪除商品子元件-->
   <DelModal
   :item="tempProduct"
   @del-item="delProduct"
   ref="delModal">
   </DelModal>
+
+  <PaginationAll
+  :pages="pagination"
+  :currentPage="currentPage"
+  :pgLength="pgLength"
+  @emit-pages="getProducts"
+  @go-next="getProducts"
+  @go-previous="getProducts">
+  </PaginationAll>
 </template>
 
 <script>
 import ProductModal from '@/components/ProductModal.vue'
 import DelModal from '@/components/DelModal.vue'
+import PaginationAll from '@/components/PaginationAll.vue'
 
 export default {
   data () {
@@ -81,14 +92,16 @@ export default {
       // 因此要寫個判斷是否為「新增商品」
       isNew: false,
       // 轉圈圈Overlay, 預設false
-      isLoading: false
+      isLoading: false,
+      currentPage: 1,
+      pgLength: []
     }
   },
   methods: {
-    getProducts () {
+    getProducts (page = 1) {
       // ${process.env...}：取得環境變數的API PATH
       // 分頁還沒寫，所以「?page=:page」從網址先拿掉
-      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products`
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products/?page=${page}`
       // 抓資料前, 先跑Overlay
       this.isLoading = true
       this.$http.get(api)
@@ -99,7 +112,10 @@ export default {
           if (response.data.success) {
             console.log(response)
             this.products = response.data.products
+            // 從API撈過來的Pagination分頁
             this.pagination = response.data.pagination
+            this.currentPage = response.data.pagination.current_page
+            this.pgLength = response.data.pagination.total_pages
           }
         })
     },
@@ -206,7 +222,8 @@ export default {
   // 區域註冊，讓ProductModal載進來
   components: {
     ProductModal,
-    DelModal
+    DelModal,
+    PaginationAll
   }
 }
 </script>

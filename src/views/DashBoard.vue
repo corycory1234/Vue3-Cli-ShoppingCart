@@ -37,10 +37,10 @@ export default {
           this.$router.push('/login')
         }
         // 登入成功, 這邊emit失敗報錯
-        this.emitter.emit('push-message', {
-          style: 'success',
-          title: '登入成功!'
-        })
+        // this.emitter.emit('push-message', {
+        //   style: 'success',
+        //   title: '登入成功!'
+        // })
       })
   },
 
